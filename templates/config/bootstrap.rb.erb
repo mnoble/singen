@@ -1,0 +1,65 @@
+module <%= name.classify %>
+  module Bootstrap
+    extend self
+
+    def run!
+      # Load the .env* file – production uses Foreman and loads
+      # the file automatically, so we don't need this there.
+      require_relative "env"
+      require_relative "config"
+      <%= name.classify %>::Env.load unless Config.env.production?
+
+      # Lib
+      require! "lib/ext"
+      require! "lib/<%= name.downcase.underscore %>"
+
+      # Models
+      require! "app/models"
+
+      # Services
+      define_module(<%= name.classify %>, :Services)
+      require! "app/services"
+
+      # Endpoints
+      define_module(<%= name.classify %>, :Endpoints)
+      define_module(<%= name.classify %>::Endpoints, :V1)
+      require_relative "../app/endpoints/v1/base"
+      require! "app/endpoints", except: ["root.rb"]
+      require_relative "../app/endpoints/root"
+
+      # Serializers
+      define_module(<%= name.classify %>, :Serializers)
+      define_module(<%= name.classify %>::Serializers, :V1)
+      require_relative "../app/serializers/v1/base"
+      require! "app/serializers"
+    end
+
+    def load_rake_tasks
+      Dir[Config.root.join("lib/tasks/**/*.rake").to_s].each { |f| load f }
+    end
+
+    private
+
+    # Setup and empty module
+    #
+    def define_module(root, name)
+      root.const_set(name, Module.new)
+    end
+
+    # Require an entire directory's files.
+    #
+    def require!(dir, except: [])
+      ordered_glob(File.expand_path("../../#{dir}/**/*.rb", __FILE__)).each do |file|
+        require file unless except.any? { |e| file.include?(e) }
+      end
+    end
+
+    # Finds and sorts files from outer-most directory to the most
+    # deeply nested files. That way, files higher up in the directory
+    # structure are required first.
+    #
+    def ordered_glob(*paths)
+      Dir[*paths.map(&:to_s)].sort_by { |f| [f.count("/"), f] }
+    end
+  end
+end

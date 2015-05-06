@@ -1,0 +1,19 @@
+module <%= name.classify %>::Endpoints
+  Root = Rack::Builder.new do
+    # Miscellaneous
+    use Rack::Deflater
+    use Rack::MethodOverride
+
+    # API
+    use Sinatra::Router do
+      provides :vnd_<%= name.downcase.underscore %>_json do
+        version "1", "edge" do
+          # mount <%= name.classify %>::Endpoints::V1::Resource
+        end
+      end
+    end
+
+    # Fallback to a 404 Not Found when all else fails.
+    run <%= name.classify %>::Endpoints::NotFound
+  end
+end

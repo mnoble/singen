@@ -1,0 +1,19 @@
+module <%= name.classify %>
+  module Serializers
+    module V1
+      class Base
+        def self.run(object)
+          object.is_a?(Array) ? serialize_many(object) : new.serialize(object)
+        end
+
+        def self.serialize_many(objects)
+          objects.map { |obj| new.serialize(obj) }
+        end
+
+        def timefmt(time)
+          time.strftime("%Y-%m-%dT%H:%M:%SZ") if time
+        end
+      end
+    end
+  end
+end

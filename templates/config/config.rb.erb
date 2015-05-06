@@ -1,0 +1,19 @@
+module <%= name.classify %>
+  module Config
+    extend self
+
+    def var(*attrs)
+      attrs.each { |attr| define_singleton_method(attr) { ENV[attr.to_s.upcase] }}
+    end
+
+    def root
+      @root ||= Pathname.new(File.expand_path("../..", __FILE__))
+    end
+
+    def env
+      @env ||= <%= name.classify %>::Env.new
+    end
+
+    var :database_url
+  end
+end

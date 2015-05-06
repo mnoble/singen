@@ -1,0 +1,34 @@
+require "sinatra/router"
+
+module Sinatra
+  class Router
+    def provides(*types, &block)
+      types.map! { |t| mime_types(t) }
+      types.flatten!
+
+      condition = lambda { |env|
+        request = Sinatra::Request.new(env)
+        request.preferred_type(types)
+      }
+      with_conditions(condition, &block)
+    end
+
+    def version(*versions, &block)
+      condition = lambda { |env|
+        versions.include?(env["HTTP_X_<%= name.underscore.upcase %>_API_VERSION"])
+      }
+      with_conditions(condition, &block)
+    end
+
+    def mime_types(type)
+      type = mime_type(type)
+      type =~ /\Aapplication\/(xml|javascript)\Z/ ? [type, "text/#$1"] : [type]
+    end
+
+    def mime_type(type)
+      return if type.nil? || type.to_s.include?("/")
+      type = ".#{type}" unless type.to_s.start_with?(".")
+      Rack::Mime.mime_type(type, nil)
+    end
+  end
+end

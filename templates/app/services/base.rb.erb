@@ -1,0 +1,9 @@
+module <%= name.classify %>
+  module Services
+    class Base
+      def self.run(*args)
+        new(*args).run
+      end
+    end
+  end
+end

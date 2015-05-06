@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+require "bundler"
+Bundler.require
+require "rainbow/ext/string"
+
+def env(path)
+  File.read(path).each_line.each_with_object({}) do |line, hash|
+    hash.store(*line.split("="))
+  end
+end
+
+if File.exists?(".env")
+  current_env = env(".env")
+  sample_env  = env(".env.sample")
+  diff        = sample_env.keys - current_env.keys
+  exit if diff.empty?
+
+  puts "\nUpdating .env".color(:blue)
+
+  File.open(".env", "a") do |f|
+    diff.each { |key| f << "#{key}=#{sample_env[key]}" }
+  end
+else
+  puts "\nCreating .env".color(:blue)
+  system "cp .env.sample .env"
+end
+
+puts "done"

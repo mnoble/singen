@@ -1,0 +1,11 @@
+namespace :schema do
+  desc "Generate schema/schema.json"
+  task :build do
+    sh "bundle exec prmd combine schema/schemata/ > schema/schema.json"
+  end
+
+  desc "Verify the generated schema"
+  task :verify do
+    sh "bundle exec prmd verify schema/schema.json"
+  end
+end

@@ -1,0 +1,11 @@
+require "pathname"
+require "uri"
+require "rainbow/ext/string"
+require_relative "config/config"
+require_relative "config/env"
+require_relative "config/bootstrap"
+<%= name.classify %>::Bootstrap.load_rake_tasks
+
+task :default do
+  sh "bundle exec foreman run rspec"
+end

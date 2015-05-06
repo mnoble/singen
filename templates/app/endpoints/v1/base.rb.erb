@@ -1,0 +1,13 @@
+module <%= name.classify %>::Endpoints::V1
+  class Base < Sinatra::Base
+    register Sinatra::Namespace
+
+    use Committee::Middleware::RequestValidation,
+      schema:  JSON.parse(<%= name.classify %>::Config.root.join("schema/schema.json").read),
+      sctrict: true
+
+    before do
+      content_type :json
+    end
+  end
+end

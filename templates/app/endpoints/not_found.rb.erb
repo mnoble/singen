@@ -1,0 +1,10 @@
+module <%= name.classify %>
+  module Endpoints
+    class NotFound < Sinatra::Base
+      not_found do
+        status 404
+        MultiJson.encode({id: :not_found, message: "Not found"})
+      end
+    end
+  end
+end

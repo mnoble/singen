@@ -1,0 +1,20 @@
+listen '/tmp/api.sock', backlog: 2048
+
+if ENV["UNICORN_PORT"]
+  listen ENV["UNICORN_PORT"].to_i, tcp_nopush: true
+  listen "localhost:#{ENV["UNICORN_PORT"].to_i}", tcp_nopush: true
+end
+
+# by default, Unicorn will log to $stderr; go to $stdout instead
+logger Logger.new($stdout)
+preload_app true
+timeout 50
+worker_processes (ENV["UNICORN_WORKERS"] || "4").to_i
+
+before_fork do |server, worker|
+  $DB.disconnect
+end
+
+after_fork do |server, worker|
+  $DB = Sequel.connect(ENV["DATABASE_URL"])
+end

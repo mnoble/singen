@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+which foreman > /dev/null 2>&1 || {
+  echo >&2 "Missing executable: 'foreman'"
+  exit 1
+}
+
+which bundle > /dev/null 2>&1 || {
+  echo >&2 "Missing executable: 'bundle'"
+  exit 1
+}
+
+bundle install
+bin/setup-env
+bundle exec rake schema:build
+bundle exec rake schema:verify
+bundle exec rake db:rebuild
+echo ""

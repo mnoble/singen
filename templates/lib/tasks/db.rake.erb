@@ -1,0 +1,30 @@
+namespace :db do
+  desc "Drop the database"
+  task :drop do
+    <%= name.classify %>::Env.load
+    sh "dropdb --if-exists #{database_name}"
+  end
+
+  desc "Create the database"
+  task :create do
+    <%= name.classify %>::Env.load
+    sh "createdb #{database_name} -E utf8"
+  end
+
+  desc "Migrate the database"
+  task :migrate do
+    <%= name.classify %>::Env.load
+    sh "sequel -m db/migrate #{ENV['DATABASE_URL']}"
+  end
+
+  desc "Rebuild the database from scratch. DANGER: deletes all data."
+  task :rebuild do
+    Rake::Task["db:drop"].invoke
+    Rake::Task["db:create"].invoke
+    Rake::Task["db:migrate"].invoke
+  end
+
+  def database_name
+    URI(ENV['DATABASE_URL']).path[1..-1]
+  end
+end

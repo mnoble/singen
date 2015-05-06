@@ -1,0 +1,71 @@
+#!/bin/sh
+
+function directory {
+    mkdir -p $1
+    echo "  Created $1/"
+}
+
+function template {
+    erb -r active_support/all name=$NAME templates/$1.erb > $NAME/$1
+    [[ $# -gt 1 ]] && chmod $2 $NAME/$1
+    echo "  Created $1"
+}
+
+NAME=$1
+DIRNAME=$(echo $NAME | awk '{print tolower($0)}')
+
+directory $NAME
+directory $NAME/app
+directory $NAME/app/endpoints
+directory $NAME/app/endpoints/v1
+directory $NAME/app/models
+directory $NAME/app/services
+directory $NAME/app/serializers
+directory $NAME/app/serializers/v1
+directory $NAME/bin
+directory $NAME/config
+directory $NAME/config/initializers
+directory $NAME/config/locales
+directory $NAME/db
+directory $NAME/db/migrate
+directory $NAME/lib
+directory $NAME/lib/tasks
+directory $NAME/lib/ext
+directory $NAME/lib/ext/sinatra
+directory $NAME/lib/$DIRNAME
+directory $NAME/schema
+directory $NAME/schema/schemata
+directory $NAME/spec
+directory $NAME/spec/endpoints
+directory $NAME/spec/models
+directory $NAME/spec/serializers
+directory $NAME/spec/factories
+
+template ".env.sample"
+template "config.ru"
+template "Rakefile"
+template "Gemfile"
+template "Procfile"
+template "app/endpoints/root.rb"
+template "app/endpoints/not_found.rb"
+template "app/endpoints/v1/base.rb"
+template "app/serializers/v1/base.rb"
+template "app/services/base.rb"
+template "bin/console" 744
+template "bin/setup" 744
+template "bin/setup-env" 744
+template "config/bootstrap.rb"
+template "config/config.rb"
+template "config/env.rb"
+template "config/environment.rb"
+template "config/unicorn.rb"
+template "config/initializers/i18n.rb"
+template "config/initializers/rack.rb"
+template "config/initializers/sequel.rb"
+template "config/locales/en.yml"
+template "db/migrate/001_enable_uuids.rb"
+template "lib/ext/sinatra/router.rb"
+template "lib/tasks/db.rake"
+template "lib/tasks/schema.rake"
+template "spec/spec_helper.rb"
+

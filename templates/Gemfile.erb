@@ -1,0 +1,31 @@
+source "https://rubygems.org"
+
+gem "sinatra", require: false
+gem "sinatra-contrib"
+gem "unicorn"
+gem "sequel"
+gem "pg"
+gem "sinatra-router"
+gem "i18n"
+gem "committee"
+
+group :development, :test do
+  gem "foreman"
+  gem "prmd"
+  gem "pry"
+  gem "pry-nav"
+  gem "dotenv"
+end
+
+group :development do
+  gem "rake"
+  gem "rainbow"
+  gem "better_errors"
+  gem "binding_of_caller"
+end
+
+group :test do
+  gem "database_cleaner"
+  gem "rspec"
+  gem "factory_girl"
+end
